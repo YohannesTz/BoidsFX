@@ -8,6 +8,8 @@ The rules applied in the simplest Boids world are as follows:
 - **Cohesion**: steer to move towards the average position (center of mass) of 
 local flockmates.
 
+this project was inspired by [Ben eater's boid demonstration ](https://github.com/beneater/boids)
+
 # MIT License (MIT)
 
 Copyright (c) Yohannes Tezera
