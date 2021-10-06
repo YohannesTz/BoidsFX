@@ -5,6 +5,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.*;
@@ -22,7 +24,7 @@ public class Main extends Application {
 
     private Boid[] boids = new Boid[numBoids];
     private GraphicsContext gc;
-    private boolean drawTrial = false;
+    private boolean drawTraces = false;
 
     //Controlling factors
     double centeringFactor = 0.005;
@@ -52,7 +54,7 @@ public class Main extends Application {
 
         primaryStage.setTitle("Boids");
         primaryStage.setScene(new Scene(vbox));
-        //Currently Resizing with canvas doesn't work
+        //Currently Resizing stage with canvas doesn't work
         primaryStage.setResizable(false);
         primaryStage.show();
     }
@@ -60,6 +62,7 @@ public class Main extends Application {
     public VBox buildSlidersBox(){
         VBox vBox = new VBox();
 
+        //Lables for slider
         Label centeringFactorLabel = new Label("Centering Factor");
         centeringFactorLabel.setTextFill(Color.web("#fff"));
         Label separationLabel = new Label("Minimum Distance");
@@ -71,12 +74,33 @@ public class Main extends Application {
         Label avoidFactorLabel = new Label("Avoid Factor");
         avoidFactorLabel.setTextFill(Color.web("#fff"));
 
+        //Slider
         Slider centeringFactorSlider = new Slider(0.003, 0.007, 0.005);
         Slider minDistanceSlider = new Slider(10, 20, 15);
         Slider matchingFactorSlider = new Slider(0.03, 0.07, 0.05);
         Slider speedLimitSlider = new Slider(10, 25, 15);
         Slider avoidFactorSlider = new Slider(0.03, 0.07, 0.05);
 
+        //Reset button
+        Button resetButton = new Button("Reset Settings");
+
+        //DrawTraces Checkbox
+        CheckBox drawTracesCheckBox = new CheckBox();
+        Label drawTracesLabel = new Label("Draw Traces");
+        drawTracesLabel.setTextFill(Color.web("#fff"));
+
+        drawTracesCheckBox.setSelected(drawTraces);
+        drawTracesCheckBox.selectedProperty().addListener((observable) -> {
+            drawTraces = !drawTraces;
+        });
+
+        resetButton.setOnAction(e -> {
+            centeringFactorSlider.setValue(0.005);
+            minDistanceSlider.setValue(15);
+            matchingFactorSlider.setValue(0.05);
+            speedLimitSlider.setValue(15);
+            avoidFactorSlider.setValue(0.05);
+        });
 
         centeringFactorSlider.valueProperty().addListener((observableValue, oldValue, newValue) -> {
             System.out.println("Centering Factor - observableValue: " + observableValue.getValue() + ", " + "oldValue: "+ oldValue +", " + "newValue: " + newValue);
@@ -104,7 +128,7 @@ public class Main extends Application {
         });
 
         vBox.getChildren().addAll(centeringFactorLabel, centeringFactorSlider, separationLabel,
-                minDistanceSlider, matchingFactorLabel, matchingFactorSlider,speedLimitLabel, speedLimitSlider, avoidFactorLabel, avoidFactorSlider);
+                minDistanceSlider, matchingFactorLabel, matchingFactorSlider,speedLimitLabel, speedLimitSlider, avoidFactorLabel, avoidFactorSlider, resetButton, drawTracesLabel,drawTracesCheckBox);
         return vBox;
     }
 
@@ -115,7 +139,7 @@ public class Main extends Application {
                     Math.random() * height,
                     Math.random() * 10 - 5,
                     Math.random() * 10 - 5,
-                    new Point2D[100]
+                    new Point2D[0]
             );
         }
     }
@@ -128,8 +152,9 @@ public class Main extends Application {
     /*public Boid[] nClosestBoids(Boid boid, int n) {
         Boid[] sorted = new Boid[boids.length];
         System.arraycopy(boids, 0, sorted, 0, boids.length);
-
-
+        .
+        .
+        //todo - finish this
         return sorted;
     }*/
 
@@ -238,7 +263,7 @@ public class Main extends Application {
         ctx.fill();
         ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-        if (drawTrial) {
+        if (drawTraces) {
             ctx.setStroke(storkeColor);
             ctx.beginPath();
             ctx.moveTo(boid.history[0].getX(), boid.history[0].getY());
@@ -261,7 +286,7 @@ public class Main extends Application {
             boid.x += boid.dx;
             boid.y += boid.dy;
 
-            push(boid.history, boid.x, boid.y);
+            boid.history = push(boid.history, boid.x, boid.y);
             boid.history = slice(boid.history, boid.history.length - 50, 0);
         }
 
