@@ -1,3 +1,7 @@
+
+//DEPS org.openjfx:javafx-controls:RELEASE:${os.detected.jfxname}
+//SOURCES Boid.java
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
